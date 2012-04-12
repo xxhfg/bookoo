@@ -18,6 +18,11 @@ SYS_ENCODING = 'UTF-8'
 Yes = 1
 #No代表0
 No = 0
+#全局锁
+g_mutex = None
+g_books = []
+g_authors = []
+g_infos = []
 
 #网站配置信息
 WEB_HOSTS = {

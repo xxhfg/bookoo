@@ -95,18 +95,20 @@ class Book_Parser(tagparser.TagParser):
                     key, value = self.parser_func(j%self.field_num, i)
                     if (key):
                         book[key] = value
+                    """
                     if (value):
                         print j, i, key, value.decode(self.html_encoding, 'ignore').encode(self.out_encoding, 'ignore')
                     else:
                         print j, i, key, value
+                    """
                 j += 1
 
             if(book):
                 if(book.has_key('Update_Time') and isTime(book['Update_Time'])):
                     self.book_list.append(book)
-        for b in self.book_list:
-            print b['Name'].decode(self.html_encoding, 'ignore').encode(self.out_encoding, 'ignore')
-        print len(self.book_list)
+        #for b in self.book_list:
+            #print b['Name'].decode(self.html_encoding, 'ignore').encode(self.out_encoding, 'ignore')
+        #print len(self.book_list)
 
 
 class Qidian_Parser(Book_Parser):
