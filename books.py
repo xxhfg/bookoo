@@ -74,7 +74,7 @@ def do_job(args):
                 if(new_md5!=old_md5):
                     old_md5 = new_md5
                     #"""
-                    for i in range(2, 11):
+                    for i in range(2, 3):
                         time.sleep(3)
                         url = params['url_template'].replace('$$PAGE$$', str(i))
                         the_page, m, e = pages.get_book_page(url)
@@ -82,8 +82,8 @@ def do_job(args):
                         #func(the_page, params, None)
                         #upd_all_book()
                     #"""
-                    #upd_all_book(book_parser.book_list)
                     book_parser.parserBook()
+                    upd_all_book(book_parser.book_list)
 
 
             book_parser = None
@@ -102,36 +102,61 @@ def do_job(args):
 def upd_all_book(book_list):
     """更新所有小说信息"""
     #global g_books
-    print len(book_list)
+    for l in book_list:
+        l['Alias'] = l['Name'] + '_' + l['Author']
+        l['is_new_book'] = config.Yes
+        l['is_new_author'] = config.Yes
+        for b in config.g_books:
+            if (l['Alias'].decode('UTF8')==b['Alias'].decode('UTF8')):
+                print l['Alias'].decode('UTF8'), b['Alias'].decode('UTF8')
+                l['book_id'] = b['id']
+                l['is_new_book'] = config.No
+                break
+        if (l['is_new_book']):
+            for a in config.g_authors:
+                if (l['Author'].decode('UTF8')==a['Name'].decode('UTF8')):
+                    print l['Author'].decode('UTF8'), a['Name'].decode('UTF8')
+                    l['author_id'] = a['id']
+                    l['is_new_author'] = config.No
+                    break
+            if (l['is_new_author']):
+                config.g_authors.append(l)
+            config.g_books.append(l)
 
     k = 0
     for b in config.g_books:
         k = k + 1
-        #print k, b['Name'], b['is_new']
-        if (b.has_key('is_new') and (b['is_new'])):
-            book = Book()
-            book.__dict__.update(b)
-            book.save()
-            b['id'] = book.id
-            b['is_new'] = config.No
-            for a in b['authors']:
+        if (b.has_key('is_new_book') and (b['is_new_book'])):
+            if (b.has_key('is_new_author') and (b['is_new_author'])):
                 author = Author()
-                author.__dict__.update(a)
+                author.Name = b['Author']
                 author.save()
-                author.books.add(book)
-                author.save()
+                b['author_id'] = author.id
+            book = Book()
+            book.Name = b['Name']
+            book.Alias = b['Alias']
+            book.author_id = b['author_id']
+            book.save()
+            b['book_id'] = book.id
+            b['is_new'] = config.No
+            #for a in b['authors']:
+                #author = Author()
+                #author.__dict__.update(a)
+                #author.save()
+                #author.books.add(book)
+                #author.save()
                 #book.author_set.add(author)
-        else:
-            book = Book(b['id'])
+        #else:
+            #book = Book(b['id'])
 
-        for i in b['infos']:
-            if (i.has_key('upd_new') and (i['upd_new'])):
-                info = BookInfo()
-                info.__dict__.update(i)
-                info.book = book
+        #for i in b['infos']:
+            #if (i.has_key('upd_new') and (i['upd_new'])):
+                #info = BookInfo()
+                #info.__dict__.update(i)
+                #info.book = book
                 #book.bookinfo_set.add(info)
-                info.save()
-                i['upd_new'] = config.No
+                #info.save()
+                #i['upd_new'] = config.No
     #print config.g_books[len(config.g_books) - 1]
 
 def get_all_book():
