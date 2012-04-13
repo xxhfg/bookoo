@@ -106,13 +106,14 @@ def upd_all_book(book_parser):
         l['Alias_Host'] = l['Alias'] + '_' + book_parser.host_name
         l['is_new_book'] = config.Yes
         l['is_new_bookinfo'] = config.Yes
+        l['is_new_contentinfo'] = config.Yes
         l['is_new_author'] = config.Yes
         for b in config.g_books:
             if (l['Alias'].decode('UTF8')==b['Alias']):
-                #print l['Alias'].decode('UTF8'), b['Alias']
                 l['book_id'] = b['id']
                 l['is_new_book'] = config.No
                 break
+
         if (l['is_new_book']):
             for a in config.g_authors:
                 if (l['Author'].decode('UTF8')==a['Name']):
@@ -125,6 +126,14 @@ def upd_all_book(book_parser):
                 l['bookinfo_id'] = bi['id']
                 l['is_new_bookinfo'] = config.No
                 break
+        #if (l.has_key('bookinfo_id')) and (config.g_contentinfos.has_key(l['bookinfo_id'])):
+        try:
+            if (config.g_contentinfos[l['bookinfo_id']] == l['Content_Url']):
+                l['is_new_contentinfo'] = config.No
+            #else:
+                #config.g_contentinfos[l['bookinfo_id']] = l['Content_Url']
+        except KeyError:
+            pass
 
     k = 0
     for b in book_parser.book_list:
@@ -141,8 +150,8 @@ def upd_all_book(book_parser):
             book.Alias = b['Alias'].decode('UTF8')
             book.author_id = b['author_id']
             book.save()
-            b['book_id'] = book.id
             config.g_books.append(model_to_dict(book))
+            b['book_id'] = book.id
             b['is_new_book'] = config.No
             b['is_new_author'] = config.No
         if (b.has_key('is_new_bookinfo') and (b['is_new_bookinfo'])):
@@ -155,15 +164,18 @@ def upd_all_book(book_parser):
             config.g_bookinfos.append(model_to_dict(bookinfo))
             b['bookinfo_id'] = bookinfo.id
 
-        if (b['Content_Url']==book_parser.last_content_url):
-            break
-        else:
+        #if (b['Content_Url']==book_parser.last_content_url):
+            #break
+        #else:
+        if (b.has_key('is_new_contentinfo') and (b['is_new_contentinfo'])):
             cinfo = ContentInfo()
             cinfo.bookinfo_id = b['bookinfo_id']
             cinfo.LastContent = b['Content'].decode('UTF8')
             cinfo.ContentUrl = b['Content_Url']
-            cinfo.LastUpdated = b['Update_Time']
+            #cinfo.LastUpdated = b['Update_Time']
+            cinfo.LastUpdated = time.time()
             cinfo.save()
+            config.g_contentinfos[b['bookinfo_id']] = b['Content_Url']
 
 def get_all_book():
     book_list = []
@@ -213,7 +225,7 @@ def get_all_bookinfo():
     return info_list
 
 def get_all_contentinfo():
-    info_list = []
+    info_list = {}
     infos = ContentInfo.objects.raw('select max(id), id, bookinfo_id, LastContent,\
                                     ContentUrl, LastUpdated from contentinfo\
                                     GROUP BY bookinfo_id ORDER BY bookinfo_id')
@@ -224,9 +236,10 @@ def get_all_contentinfo():
         sys.stdout.write('\r')
         sys.stdout.flush()
 
-        info = dict{}
-        info[i.bookinfo_id] = i.Content_Url
-        info_list.append(info)
+        #info = dict{}
+        #info[i.bookinfo_id] = i.Content_Url
+        #info_list.append(info)
+        info_list[i.bookinfo_id] = i.ContentUrl
 
     return info_list
 
@@ -257,10 +270,10 @@ if __name__ == '__main__':
     print 'get authors', len(config.g_authors)
     config.g_bookinfos = get_all_bookinfo()
     print 
-    print 'get infos', len(config.g_bookinfos)
+    print 'get bookinfos', len(config.g_bookinfos)
     config.g_contentinfos = get_all_contentinfo()
     print 
-    print 'get infos', len(config.g_contentinfos)
+    print 'get contentinfos', len(config.g_contentinfos)
 
     webs=['http://all.qidian.com/book/bookstore.aspx?ChannelId=-1&SubCategoryId=-1&Tag=all&Size=-1&Action=-1&OrderId=6&P=all&PageIndex=1&update=-1&Vip=-1&Boutique=-1&SignStatus=-1',
           #'http://all.qidian.com/book/bookstore.aspx?ChannelId=-1&SubCategoryId=-1&Tag=all&Size=-1&Action=-1&OrderId=6&P=all&PageIndex=100&update=-1&Vip=-1&Boutique=-1&SignStatus=-1', 
