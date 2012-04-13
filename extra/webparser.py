@@ -26,6 +26,8 @@ class Book_Parser(tagparser.TagParser):
     base_url = '' #网站地址
     ignore_list = [] #忽略字段列表
     book_list = [] #小说列表
+    last_content_url = '' #最后更新
+    host_name = '' #网站名称
 
     def __init__(self, dict_key):
         super(Book_Parser, self).__init__()
@@ -38,6 +40,8 @@ class Book_Parser(tagparser.TagParser):
                 self.html_encoding = config.WEB_HOSTS[dict_key]['code']
             if (config.WEB_HOSTS[dict_key].has_key('host')):
                 self.base_url = config.WEB_HOSTS[dict_key]['host']
+            if (config.WEB_HOSTS[dict_key].has_key('name')):
+                self.host_name = config.WEB_HOSTS[dict_key]['name']
             if (config.SYS_ENCODING):
                 self.encoding = config.SYS_ENCODING
             else:
@@ -78,7 +82,7 @@ class Book_Parser(tagparser.TagParser):
 
     def parserBook(self):
         if(len(self.contentList)>0):
-            print len(self.contentList)
+            #print len(self.contentList)
             j = 0
             book = {}
             for i in range(0, len(self.contentList)):

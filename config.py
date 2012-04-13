@@ -21,8 +21,9 @@ No = 0
 #全局锁
 g_mutex = None
 g_books = []
+g_bookinfos = []
 g_authors = []
-g_infos = []
+g_contentinfos = []
 
 #网站配置信息
 WEB_HOSTS = {

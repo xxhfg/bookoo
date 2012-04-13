@@ -38,7 +38,7 @@ def get_book_page(Url, modified=None, etag=None):
 
         if (ns.has_key('code')):
             if (ns['code']==200):
-                print ns['header']
+                #print ns['header']
                 return ns['data'], modified, etag
         else:
             return ns['data'], None, None

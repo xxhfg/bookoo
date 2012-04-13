@@ -23,14 +23,22 @@ class Book(models.Model):
         db_table = 'books'
 
 class BookInfo(models.Model):
-    """小说更新信息"""
+    """小说网络信息"""
 
     book = models.ForeignKey(Book)
     HostName = models.CharField(max_length=30)
     BookUrl = models.URLField()
+    Alias = models.CharField(max_length=100)
+        
+    class Meta:
+        db_table = 'bookinfo'
+
+class ContentInfo(models.Model):
+    """小说更新信息"""
+    bookinfo = models.ForeignKey(BookInfo)
     LastContent = models.CharField(max_length=50)
     ContentUrl = models.URLField()
     LastUpdated = models.DateTimeField(auto_now_add=True)
         
     class Meta:
-        db_table = 'bookinfo'
+        db_table = 'contentinfo'
