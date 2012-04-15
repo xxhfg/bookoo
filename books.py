@@ -124,7 +124,7 @@ def upd_all_book(book_parser):
         for bi in config.g_bookinfos:
             if (l['Alias_Host'].decode('UTF8')==bi['Alias']):
                 l['bookinfo_id'] = bi['id']
-                #l['is_new_bookinfo'] = config.No
+                l['is_new_bookinfo'] = config.No
                 break
         #if (l.has_key('bookinfo_id')) and (config.g_contentinfos.has_key(l['bookinfo_id'])):
         try:
@@ -137,7 +137,6 @@ def upd_all_book(book_parser):
 
     k = 0
     for b in book_parser.book_list:
-        print b
         if (book_parser.is_origin):
           if (b.has_key('is_new_book') and (b['is_new_book'])):
             if (b.has_key('is_new_author') and (b['is_new_author'])):
@@ -168,13 +167,14 @@ def upd_all_book(book_parser):
             bookinfo.save()
             config.g_bookinfos.append(model_to_dict(bookinfo))
             b['bookinfo_id'] = bookinfo.id
+            b['is_new_bookinfo'] = config.No
           else:
-            bookinfo = BookInfo(b['bookinfo_id'])
+            bookinfo = BookInfo.objects.get(id=b['bookinfo_id'])
             bookinfo.LastContent = b['Content'].decode('UTF8')
             bookinfo.ContentUrl = b['Content_Url']
-            bookinfo.LastUpdated = time.time()
+            bookinfo.LastUpdated = time.strftime('%Y-%m-%d %H:%M',
+                                                 time.localtime())
             bookinfo.save()
-          #l['is_new_bookinfo'] = config.No
 
         #if (b['Content_Url']==book_parser.last_content_url):
             #break
