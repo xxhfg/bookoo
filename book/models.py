@@ -29,6 +29,9 @@ class BookInfo(models.Model):
     HostName = models.CharField(max_length=30)
     BookUrl = models.URLField()
     Alias = models.CharField(max_length=100)
+    LastContent = models.CharField(max_length=50)
+    ContentUrl = models.URLField()
+    LastUpdated = models.DateTimeField(auto_now_add=True)
         
     class Meta:
         db_table = 'bookinfo'

@@ -28,6 +28,7 @@ class Book_Parser(tagparser.TagParser):
     book_list = [] #小说列表
     last_content_url = '' #最后更新
     host_name = '' #网站名称
+    is_origin = False #是否原创
 
     def __init__(self, dict_key):
         super(Book_Parser, self).__init__()
@@ -42,6 +43,8 @@ class Book_Parser(tagparser.TagParser):
                 self.base_url = config.WEB_HOSTS[dict_key]['host']
             if (config.WEB_HOSTS[dict_key].has_key('name')):
                 self.host_name = config.WEB_HOSTS[dict_key]['name']
+            if (config.WEB_HOSTS[dict_key].has_key('is_origin')):
+                self.is_origin = config.WEB_HOSTS[dict_key]['is_origin']
             if (config.SYS_ENCODING):
                 self.encoding = config.SYS_ENCODING
             else:

@@ -39,6 +39,7 @@ WEB_HOSTS = {
         'page_start':'<!--[if !IE]> 结果列表 开始 <![endif]-->', 
         'page_stop':'<!--[if !IE]> 结果列表 结束 <![endif]-->', 
         'book_pattern':'<span class="swbt"><a href="(?P<book_url>.*?)".*?>(?P<book_name>.*?)</.*?href="(?P<content_url>.*?)".*?>(?P<content_name>.*?)</.*?href="(?P<author_url>.*?)".*?>(?P<author_name>.*?)</.*?">(?P<update_time>.*?)</', 
+        'is_origin':True, 
     }, 
     'test':{
         'name':'test', 
