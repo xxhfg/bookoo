@@ -91,7 +91,7 @@ def do_job(args):
             raise e
 
         print j
-        time.sleep(300)
+        time.sleep(30)
 
     #config.g_mutex.acquire()
     #print "共处理 %4d 条记录" % (i)
@@ -104,6 +104,7 @@ def upd_all_book(book_parser):
     for l in book_parser.book_list:
         l['Alias'] = l['Name'] + '_' + l['Author']
         l['Alias_Host'] = l['Alias'] + '_' + book_parser.host_name
+        l['Alias_Author'] = l['Author'] + '_' + book_parser.host_name
         l['is_new_book'] = config.Yes
         l['is_new_bookinfo'] = config.Yes
         l['is_new_contentinfo'] = config.Yes
@@ -116,7 +117,7 @@ def upd_all_book(book_parser):
 
         if (l['is_new_book']):
             for a in config.g_authors:
-                if (l['Author'].decode('UTF8')==a['Name']):
+                if (l['Alias_Author'].decode('UTF8')==a['Alias']):
                     #print l['Author'].decode('UTF8'), a['Name']
                     l['author_id'] = a['id']
                     l['is_new_author'] = config.No
@@ -142,6 +143,7 @@ def upd_all_book(book_parser):
             if (b.has_key('is_new_author') and (b['is_new_author'])):
                 author = Author()
                 author.Name = b['Author'].decode('UTF8')
+                author.Alias = b['Alias_Author'].decode('UTF8')
                 author.save()
                 b['author_id'] = author.id
                 config.g_authors.append(model_to_dict(author))
@@ -168,6 +170,7 @@ def upd_all_book(book_parser):
             config.g_bookinfos.append(model_to_dict(bookinfo))
             b['bookinfo_id'] = bookinfo.id
             b['is_new_bookinfo'] = config.No
+          """
           else:
             bookinfo = BookInfo.objects.get(id=b['bookinfo_id'])
             bookinfo.LastContent = b['Content'].decode('UTF8')
@@ -175,24 +178,19 @@ def upd_all_book(book_parser):
             bookinfo.LastUpdated = time.strftime('%Y-%m-%d %H:%M',
                                                  time.localtime())
             bookinfo.save()
-
-        #if (b['Content_Url']==book_parser.last_content_url):
-            #break
-        #else:
-        """
+          """
         if (b.has_key('is_new_contentinfo') and (b['is_new_contentinfo'])):
             k = k + 1
             cinfo = ContentInfo()
             cinfo.bookinfo_id = b['bookinfo_id']
             cinfo.LastContent = b['Content'].decode('UTF8')
             cinfo.ContentUrl = b['Content_Url']
-            #cinfo.LastUpdated = b['Update_Time']
-            cinfo.LastUpdated = time.time()
+            cinfo.LastUpdated = time.strftime('%Y-%m-%d %H:%M',
+                                                 time.localtime())
             cinfo.save()
             config.g_contentinfos[b['bookinfo_id']] = b['Content_Url']
-            l['is_new_contentinfo'] = config.No
-        """
-    #print "valid record %4d" % (k)
+            b['is_new_contentinfo'] = config.No
+    print "valid record %4d" % (k)
 
 def get_all_book():
     book_list = []
