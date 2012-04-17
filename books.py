@@ -17,7 +17,8 @@ from django.db import  transaction
 from django.forms.models import model_to_dict
 
 from book.models import Book, Author, BookInfo, ContentInfo
-from extra.workmanager import *
+#from extra.workmanager import *
+from extra.work import * 
 from extra import webparser, pages
 #from config import g_mutex, g_books, g_authors
 
@@ -26,9 +27,58 @@ from extra import webparser, pages
 #global g_authors
 
 #具体要做的任务  
+def do_job(arg):
+    hostname = arg
+    print hostname + ' processing......'
+    if(config.WEB_HOSTS.has_key(hostname)):
+        params = config.WEB_HOSTS[hostname]
+    else:
+        return -1
+
+    if(params.has_key('is_valid') and (not params['is_valid'])):
+        return -1
+
+    if(not hasattr(webparser, params['function'])):
+        return -1
+    func = getattr(webparser, params['function'])
+
+    modified = None
+    etag = None
+    try:
+        i = 1
+        url = params['url_template'].replace('$$PAGE$$', str(i))
+        the_page, modified, etag = pages.get_book_page(url, modified, etag)
+        if (the_page):
+            book_parser = None
+            book_parser =func(hostname)
+            book_parser.fetchString(the_page)
+
+            for i in range(2, 4):
+                time.sleep(3)
+                url = params['url_template'].replace('$$PAGE$$', str(i))
+                the_page, m, e = pages.get_book_page(url)
+                book_parser.fetchString(the_page)
+
+            book_parser.parserBook()
+            if config.g_mutex.acquire():
+                #print hostname + '    lock......'
+                upd_all_book(book_parser)
+                config.g_mutex.release()
+                type(book_parser).last_content_url = book_parser.book_list[0]['Content_Url']
+                print ("%s 共处理 %4d 条记录" %
+                       (book_parser.host_name, 
+                        len(book_parser.book_list))).decode(config.SYS_ENCODING)
+                #print hostname + '    unlock......'
+            return 0
+        else:
+            return -2
+    except Exception, e:
+        print hostname, sys.exc_info()
+        return -3
+
 # @transaction.commit_on_success
 # @transaction.commit_manually
-def do_job(args):  
+def do_job3(args):  
     #global g_mutex
     #global g_books
 
@@ -79,13 +129,15 @@ def do_job(args):
                         book_parser.fetchString(the_page)
 
                     book_parser.parserBook()
-                    config.g_mutex.acquire()
+                    print hostname + '    lock......'
+                    #config.g_mutex.acquire()
                     upd_all_book(book_parser)
                     type(book_parser).last_content_url = book_parser.book_list[0]['Content_Url']
                     print ("%s 共处理 %4d 条记录" %
                            (book_parser.host_name, 
                             len(book_parser.book_list))).decode(config.SYS_ENCODING)
-                    config.g_mutex.release()
+                    #config.g_mutex.release()
+                    print hostname + '    unlock......'
 
 
         except Exception, e:
@@ -256,24 +308,9 @@ def get_all_contentinfo():
     return info_list
 
 def main():
-    """处理通达信五分钟数据"""
-    #global g_mutex
+    import socket
+    socket.setdefaulttimeout(10)
 
-    # from singleinstance import * 
-    config.g_mutex = threading.Lock()
-    start = time.time()  
-
-    work_manager =  WorkManager(sh_files, do_job, 10)#或者work_manager =  WorkManager(10000, 20)  
-    work_manager.wait_allcomplete()  
-
-    end = time.time()  
-    print end - start
-
-if __name__ == '__main__':  
-
-    bt = time.time()
-    socket.setdefaulttimeout(config.OUT_OF_TIME)
-    config.g_mutex = threading.Lock()
     config.g_books = get_all_book()
     print 
     print 'get books', len(config.g_books)
@@ -287,10 +324,22 @@ if __name__ == '__main__':
     print 
     print 'get contentinfos', len(config.g_contentinfos)
 
-    #do_job(['txt6', ])
     while True:
-        work_manager =  WorkManager(config.WEB_HOSTS, do_job, 3)#或者work_manager =  WorkManager(10000, 20)  
-        work_manager.wait_allcomplete()  
-        print 'sleeping 30s......'
-        time.sleep(30)
+        #do_job('38836')
+        wm = WorkerManager(4)
+        for k in config.WEB_HOSTS:
+            wm.add_job( do_job, k)
+        wm.wait_for_complete()
+
+        #work_manager =  WorkManager(config.WEB_HOSTS, do_job, 5)#或者work_manager =  WorkManager(10000, 20)  
+        #work_manager.wait_allcomplete()  
+
+        print 'sleeping......'
+        time.sleep(10)
+
+if __name__ == '__main__':  
+
+    config.g_mutex = threading.Lock()
+    bt = time.time()
+    main()
     print time.time() - bt

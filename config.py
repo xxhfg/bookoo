@@ -42,6 +42,7 @@ WEB_HOSTS = {
         'page_stop':'<!--[if !IE]> 结果列表 结束 <![endif]-->', 
         'book_pattern':'<span class="swbt"><a href="(?P<book_url>.*?)".*?>(?P<book_name>.*?)</.*?href="(?P<content_url>.*?)".*?>(?P<content_name>.*?)</.*?href="(?P<author_url>.*?)".*?>(?P<author_name>.*?)</.*?">(?P<update_time>.*?)</', 
         'is_origin':True, 
+        'is_valid':True, 
     }, 
     'skxsw':{
         'name':'搜客小说网', 
@@ -55,6 +56,7 @@ WEB_HOSTS = {
         'page_stop':'<div class="pages">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'dukankan':{
         'name':'读看看', 
@@ -68,6 +70,7 @@ WEB_HOSTS = {
         'page_stop':'<div id="CrListPage">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'wjskw':{
         'name':'万卷书库', 
@@ -81,6 +84,7 @@ WEB_HOSTS = {
         'page_stop':'<div align=right id="page">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     '53sj':{
         'name':'53书居', 
@@ -94,6 +98,7 @@ WEB_HOSTS = {
         'page_stop':'<div class="pages">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     '93zw':{
         'name':'就上书居', 
@@ -107,6 +112,7 @@ WEB_HOSTS = {
         'page_stop':'<div id="showlistpage">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'qzwap':{
         'name':'圈子文学', 
@@ -120,6 +126,7 @@ WEB_HOSTS = {
         'page_stop':'<div class="pages">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'ydnovel':{
         'name':'原点小说', 
@@ -133,6 +140,7 @@ WEB_HOSTS = {
         'page_stop':'<div class="pages">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'kkkxs':{
         'name':'三K小说', 
@@ -146,6 +154,7 @@ WEB_HOSTS = {
         'page_stop':'<div class="pages">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'dawenxue':{
         'name':'大文学', 
@@ -159,6 +168,7 @@ WEB_HOSTS = {
         'page_stop':'<div class="pages">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'baiwandu':{
         'name':'百万读书', 
@@ -172,6 +182,7 @@ WEB_HOSTS = {
         'page_stop':'<!-- AspNetPager', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     '38836':{
         'name':'梦轩阁', 
@@ -182,9 +193,10 @@ WEB_HOSTS = {
         'url_template':'http://www.38836.com/BookList.aspx?page=$$PAGE$$', 
         #替换掉$$PAGE$$, 生成查询地址
         'page_start':'<div id="CrListText">', 
-        'page_stop':'<div class="pages">', 
+        'page_stop':'<div class="pager">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     '24novel':{
         'name':'新奇点', 
@@ -198,6 +210,7 @@ WEB_HOSTS = {
         'page_stop':'<div class="pages">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'duzheju':{
         'name':'读者居', 
@@ -211,6 +224,7 @@ WEB_HOSTS = {
         'page_stop':'<div class="bookpage">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'zhuishu':{
         'name':'追书网', 
@@ -224,6 +238,7 @@ WEB_HOSTS = {
         'page_stop':'<div class="bookpage">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
     'txt6':{
         'name':'言情书楼', 
@@ -237,5 +252,6 @@ WEB_HOSTS = {
         'page_stop':'<div class="pages">', 
         'book_pattern':'', 
         'is_origin':False, 
+        'is_valid':True, 
     }, 
 }
