@@ -35,7 +35,7 @@ def do_job(arg):
     else:
         return -1
 
-    if(params.has_key('is_valid') and (not params['is_valid'])):
+    if((not params.has_key('is_valid')) or (not params['is_valid'])):
         return -1
 
     if(not hasattr(webparser, params['function'])):
@@ -75,75 +75,6 @@ def do_job(arg):
     except Exception, e:
         print hostname, sys.exc_info()
         return -3
-
-# @transaction.commit_on_success
-# @transaction.commit_manually
-def do_job3(args):  
-    #global g_mutex
-    #global g_books
-
-    if not ((type(args) is types.ListType) and (len(args)==1)):
-        return None
-
-    hostname = args[0]
-    print hostname + ' processing......'
-    if(config.WEB_HOSTS.has_key(args[0])):
-        params = config.WEB_HOSTS[args[0]]
-    else:
-        return None
-    #print params
-
-    if(not hasattr(webparser, params['function'])):
-        return None
-    func = getattr(webparser, params['function'])
-
-    old_md5 = None
-    modified = None
-    etag = None
-    j = 0
-    while j == 0:
-        i = 1
-        try:
-            book_parser = None
-            j += 1
-            #print j
-            url = params['url_template'].replace('$$PAGE$$', str(i))
-            #print modified, etag
-            the_page, modified, etag = pages.get_book_page(url, modified, etag)
-            #print modified, etag
-
-            bt = time.time()
-            book_parser =func(hostname)
-            book_parser.fetchString(the_page)
-            #new_md5 = book_parser.md5()
-
-            #if(new_md5!=None):
-                #if(new_md5!=old_md5):
-                    #old_md5 = new_md5
-                    #"""
-            if the_page:
-                    for i in range(2, 4):
-                        time.sleep(3)
-                        url = params['url_template'].replace('$$PAGE$$', str(i))
-                        the_page, m, e = pages.get_book_page(url)
-                        book_parser.fetchString(the_page)
-
-                    book_parser.parserBook()
-                    print hostname + '    lock......'
-                    #config.g_mutex.acquire()
-                    upd_all_book(book_parser)
-                    type(book_parser).last_content_url = book_parser.book_list[0]['Content_Url']
-                    print ("%s 共处理 %4d 条记录" %
-                           (book_parser.host_name, 
-                            len(book_parser.book_list))).decode(config.SYS_ENCODING)
-                    #config.g_mutex.release()
-                    print hostname + '    unlock......'
-
-
-        except Exception, e:
-            raise e
-        #print j
-        #time.sleep(30)
 
 @transaction.commit_on_success
 def upd_all_book(book_parser):
@@ -335,7 +266,7 @@ def main():
         #work_manager.wait_allcomplete()  
 
         print 'sleeping......'
-        time.sleep(10)
+        time.sleep(300)
 
 if __name__ == '__main__':  
 
