@@ -14,7 +14,7 @@ import hashlib
 
 def isTime(tm):
     try:
-        ret = time.mktime(time.strptime(tm, '%Y-%m-%d %H:%M:%S'))
+        ret = time.mktime(time.strptime(tm, config.ISOTIMEFORMAT))
         return True
     except Exception, e:
         return False
@@ -102,12 +102,7 @@ class Book_Parser(tagparser.TagParser):
                     key, value = self.parser_func(j%self.field_num, i)
                     if (key):
                         book[key] = value
-                    """
-                    if (value):
-                        print j, i, key, value.decode(self.html_encoding, 'ignore').encode(self.out_encoding, 'ignore')
-                    else:
-                        print j, i, key, value
-                    """
+                        #print j, i, key, value.decode(self.encoding)
                 j += 1
 
             if(book):
@@ -144,7 +139,451 @@ class Qidian_Parser(Book_Parser):
                             self.contentList[i].startswith('/') else
                             self.contentList[i]], 
                 14: lambda: ['Author', self.contentList[i]], 
-                15: lambda: ['Update_Time', '20' + self.contentList[i] + ':00']
+                15: lambda: ['Update_Time', '20' + self.contentList[i] + ':00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Skxsw_Parser(Book_Parser):
+    """搜客小说网解析"""
+    field_num = 8
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                0: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                1: lambda: ['Name', self.contentList[i]], 
+                2: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                3: lambda: ['Content', self.contentList[i]], 
+                4: lambda: ['Author', self.contentList[i]], 
+                5: lambda: ['Chars', self.contentList[i]], 
+                6: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+
+class Dukankan_Parser(Book_Parser):
+    """读看看解析"""
+    field_num = 12
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        year = time.strftime('%Y', time.localtime())
+        key = None
+        value = None
+        try:
+            key, value = {
+                4: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                5: lambda: ['Name', self.contentList[i]], 
+                6: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                7: lambda: ['Content', self.contentList[i]], 
+                8: lambda: ['Author_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                9: lambda: ['Author', self.contentList[i]], 
+                10: lambda: ['Update_Time', year + '-' + 
+                             self.contentList[i].replace('月', '-').replace('日', '')
+                             + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Wjskw_Parser(Book_Parser):
+    """万卷书库解析"""
+    field_num = 8
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                1: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                2: lambda: ['Name', self.contentList[i]], 
+                3: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                4: lambda: ['Content', self.contentList[i]], 
+                5: lambda: ['Author_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                6: lambda: ['Author', self.contentList[i]], 
+                7: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Sj53_Parser(Book_Parser):
+    """53书居解析"""
+    field_num = 8
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                0: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                1: lambda: ['Name', self.contentList[i]], 
+                2: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                3: lambda: ['Content', self.contentList[i]], 
+                4: lambda: ['Author', self.contentList[i]], 
+                5: lambda: ['Chars', self.contentList[i]], 
+                6: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Zw93_Parser(Book_Parser):
+    """就上中文解析"""
+    field_num = 11
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        year = time.strftime('%Y', time.localtime())
+        key = None
+        value = None
+        try:
+            key, value = {
+                2: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                5: lambda: ['Name', self.contentList[i]], 
+                6: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                7: lambda: ['Content', self.contentList[i]], 
+                8: lambda: ['Update_Time', year + '-' + 
+                             self.contentList[i].replace('月', '-').replace('日', '')
+                             + ' 00:00:00'], 
+                9: lambda: ['Author', self.contentList[i]], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Qzwap_Parser(Book_Parser):
+    """圈子文学解析"""
+    field_num = 7
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                0: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                1: lambda: ['Name', self.contentList[i]], 
+                2: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                3: lambda: ['Content', self.contentList[i]], 
+                4: lambda: ['Author', self.contentList[i]], 
+                5: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Ydnovel_Parser(Book_Parser):
+    """原点小说解析"""
+    field_num = 10
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                0: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                1: lambda: ['Name', self.contentList[i]], 
+                4: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                5: lambda: ['Content', self.contentList[i]], 
+                2: lambda: ['Author_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                3: lambda: ['Author', self.contentList[i]], 
+                8: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Kkkxs_Parser(Book_Parser):
+    """三K小说解析"""
+    field_num = 8
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                0: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                1: lambda: ['Name', self.contentList[i]], 
+                2: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                3: lambda: ['Content', self.contentList[i]], 
+                4: lambda: ['Author', self.contentList[i]], 
+                6: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Dawenxue_Parser(Book_Parser):
+    """大文学解析"""
+    field_num = 10
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                0: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                1: lambda: ['Name', self.contentList[i]], 
+                4: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                5: lambda: ['Content', self.contentList[i]], 
+                6: lambda: ['Author', self.contentList[i]], 
+                8: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Baiwandu_Parser(Book_Parser):
+    """百万读书解析"""
+    field_num = 12
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                5: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                6: lambda: ['Name', self.contentList[i]], 
+                7: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                8: lambda: ['Content', self.contentList[i]], 
+                10: lambda: ['Author', self.contentList[i]], 
+                9: lambda: ['Update_Time', '20' + self.contentList[i] + ':00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Mengxuange_Parser(Book_Parser):
+    """梦轩阁解析"""
+    field_num = 12
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                4: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                5: lambda: ['Name', self.contentList[i]], 
+                6: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                7: lambda: ['Content', self.contentList[i]], 
+                9: lambda: ['Author', self.contentList[i]], 
+                11: lambda: ['Update_Time', '20' +
+                             self.contentList[i].replace('.', '-') + ':00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Novel24_Parser(Book_Parser):
+    """新奇点解析"""
+    field_num = 11
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                0: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                1: lambda: ['Name', self.contentList[i]], 
+                3: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                4: lambda: ['Content', self.contentList[i]], 
+                6: lambda: ['Author', self.contentList[i]], 
+                9: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Duzheju_Parser(Book_Parser):
+    """读者居解析"""
+    field_num = 11
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                2: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                5: lambda: ['Name', self.contentList[i]], 
+                6: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                7: lambda: ['Content', self.contentList[i]], 
+                9: lambda: ['Author', self.contentList[i]], 
+                10: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Zhuishu_Parser(Book_Parser):
+    """追书网解析"""
+    field_num = 11
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        year = time.strftime('%Y', time.localtime())
+        key = None
+        value = None
+        try:
+            key, value = {
+                2: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                5: lambda: ['Name', self.contentList[i]], 
+                6: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                7: lambda: ['Content', self.contentList[i]], 
+                9: lambda: ['Author', self.contentList[i]], 
+                10: lambda: ['Update_Time', year + '-' + 
+                             self.contentList[i].replace('月', '-').replace('日', '')
+                             + ' 00:00:00'], 
+            }[num]()
+        except KeyError, e:
+            pass
+
+        return key, value
+        
+class Txt6_Parser(Book_Parser):
+    """言情书楼解析"""
+    field_num = 8
+    ignore_list = []
+
+    def parser_func(self, num, i):
+        key = None
+        value = None
+        try:
+            key, value = {
+                0: lambda: ['Book_Url', self.base_url +
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                1: lambda: ['Name', self.contentList[i]], 
+                2: lambda: ['Content_Url', self.base_url + 
+                            self.contentList[i] if
+                            self.contentList[i].startswith('/') else
+                            self.contentList[i]], 
+                3: lambda: ['Content', self.contentList[i]], 
+                4: lambda: ['Author', self.contentList[i]], 
+                6: lambda: ['Update_Time', '20' + self.contentList[i] + ' 00:00:00'], 
             }[num]()
         except KeyError, e:
             pass

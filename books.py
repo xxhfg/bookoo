@@ -36,6 +36,7 @@ def do_job(args):
         return None
 
     hostname = args[0]
+    print hostname + ' processing......'
     if(config.WEB_HOSTS.has_key(args[0])):
         params = config.WEB_HOSTS[args[0]]
     else:
@@ -50,7 +51,7 @@ def do_job(args):
     modified = None
     etag = None
     j = 0
-    while True:
+    while j == 0:
         i = 1
         try:
             book_parser = None
@@ -63,7 +64,6 @@ def do_job(args):
 
             bt = time.time()
             book_parser =func(hostname)
-            #print type(the_page)
             book_parser.fetchString(the_page)
             #new_md5 = book_parser.md5()
 
@@ -82,20 +82,16 @@ def do_job(args):
                     config.g_mutex.acquire()
                     upd_all_book(book_parser)
                     type(book_parser).last_content_url = book_parser.book_list[0]['Content_Url']
-                    print ("共处理 %4d 条记录" %
-                           (len(book_parser.book_list))).decode('UTF8')
+                    print ("%s 共处理 %4d 条记录" %
+                           (book_parser.host_name, 
+                            len(book_parser.book_list))).decode(config.SYS_ENCODING)
                     config.g_mutex.release()
 
 
         except Exception, e:
             raise e
-
-        print j
-        time.sleep(30)
-
-    #config.g_mutex.acquire()
-    #print "共处理 %4d 条记录" % (i)
-    #config.g_mutex.release()
+        #print j
+        #time.sleep(30)
 
 @transaction.commit_on_success
 def upd_all_book(book_parser):
@@ -110,20 +106,20 @@ def upd_all_book(book_parser):
         l['is_new_contentinfo'] = config.Yes
         l['is_new_author'] = config.Yes
         for b in config.g_books:
-            if (l['Alias'].decode('UTF8')==b['Alias']):
+            if (l['Alias'].decode(config.SYS_ENCODING)==b['Alias']):
                 l['book_id'] = b['id']
                 l['is_new_book'] = config.No
                 break
 
         if (l['is_new_book']):
             for a in config.g_authors:
-                if (l['Alias_Author'].decode('UTF8')==a['Alias']):
-                    #print l['Author'].decode('UTF8'), a['Name']
+                if (l['Alias_Author'].decode(config.SYS_ENCODING)==a['Alias']):
+                    #print l['Author'].decode(config.SYS_ENCODING), a['Name']
                     l['author_id'] = a['id']
                     l['is_new_author'] = config.No
                     break
         for bi in config.g_bookinfos:
-            if (l['Alias_Host'].decode('UTF8')==bi['Alias']):
+            if (l['Alias_Host'].decode(config.SYS_ENCODING)==bi['Alias']):
                 l['bookinfo_id'] = bi['id']
                 l['is_new_bookinfo'] = config.No
                 break
@@ -142,28 +138,28 @@ def upd_all_book(book_parser):
           if (b.has_key('is_new_book') and (b['is_new_book'])):
             if (b.has_key('is_new_author') and (b['is_new_author'])):
                 author = Author()
-                author.Name = b['Author'].decode('UTF8')
-                author.Alias = b['Alias_Author'].decode('UTF8')
+                author.Name = b['Author'].decode(config.SYS_ENCODING)
+                author.Alias = b['Alias_Author'].decode(config.SYS_ENCODING)
                 author.save()
                 b['author_id'] = author.id
                 config.g_authors.append(model_to_dict(author))
             book = Book()
-            book.Name = b['Name'].decode('UTF8')
-            book.Alias = b['Alias'].decode('UTF8')
+            book.Name = b['Name'].decode(config.SYS_ENCODING)
+            book.Alias = b['Alias'].decode(config.SYS_ENCODING)
             book.author_id = b['author_id']
             book.save()
             config.g_books.append(model_to_dict(book))
             b['book_id'] = book.id
             b['is_new_book'] = config.No
             b['is_new_author'] = config.No
-        if b.has_key('is_new_bookinfo'):
-          if (b['is_new_bookinfo']):
+        if (b.has_key('is_new_bookinfo') and b.has_key('is_new_book')):
+          if ((b['is_new_bookinfo']) and (not b['is_new_book'])):
             bookinfo = BookInfo()
             bookinfo.book_id = b['book_id']
             bookinfo.HostName = book_parser.host_name 
             bookinfo.BookUrl = b['Book_Url']
-            bookinfo.Alias = b['Alias_Host'].decode('UTF8')
-            bookinfo.LastContent = b['Content'].decode('UTF8')
+            bookinfo.Alias = b['Alias_Host'].decode(config.SYS_ENCODING)
+            bookinfo.LastContent = b['Content'].decode(config.SYS_ENCODING)
             bookinfo.ContentUrl = b['Content_Url']
             bookinfo.LastUpdated = time.time()
             bookinfo.save()
@@ -173,17 +169,18 @@ def upd_all_book(book_parser):
           """
           else:
             bookinfo = BookInfo.objects.get(id=b['bookinfo_id'])
-            bookinfo.LastContent = b['Content'].decode('UTF8')
+            bookinfo.LastContent = b['Content'].decode(config.SYS_ENCODING)
             bookinfo.ContentUrl = b['Content_Url']
             bookinfo.LastUpdated = time.strftime('%Y-%m-%d %H:%M',
                                                  time.localtime())
             bookinfo.save()
           """
-        if (b.has_key('is_new_contentinfo') and (b['is_new_contentinfo'])):
+        if (b.has_key('is_new_contentinfo') and b.has_key('is_new_book')):
+          if ((b['is_new_contentinfo']) and (not b['is_new_book'])):
             k = k + 1
             cinfo = ContentInfo()
             cinfo.bookinfo_id = b['bookinfo_id']
-            cinfo.LastContent = b['Content'].decode('UTF8')
+            cinfo.LastContent = b['Content'].decode(config.SYS_ENCODING)
             cinfo.ContentUrl = b['Content_Url']
             cinfo.LastUpdated = time.strftime('%Y-%m-%d %H:%M',
                                                  time.localtime())
@@ -290,12 +287,10 @@ if __name__ == '__main__':
     print 
     print 'get contentinfos', len(config.g_contentinfos)
 
-    webs=['http://all.qidian.com/book/bookstore.aspx?ChannelId=-1&SubCategoryId=-1&Tag=all&Size=-1&Action=-1&OrderId=6&P=all&PageIndex=1&update=-1&Vip=-1&Boutique=-1&SignStatus=-1',
-          #'http://all.qidian.com/book/bookstore.aspx?ChannelId=-1&SubCategoryId=-1&Tag=all&Size=-1&Action=-1&OrderId=6&P=all&PageIndex=100&update=-1&Vip=-1&Boutique=-1&SignStatus=-1', 
-         ]
-    do_job(['qidian', ])
-    #work_manager =  WorkManager(config.WEB_HOSTS, do_job, 10)#或者work_manager =  WorkManager(10000, 20)  
-    #work_manager.wait_allcomplete()  
-    #do_job2([config.SZ_LINE_HOME + '/sz000001.lc5', ])
-    #main()
+    #do_job(['txt6', ])
+    while True:
+        work_manager =  WorkManager(config.WEB_HOSTS, do_job, 3)#或者work_manager =  WorkManager(10000, 20)  
+        work_manager.wait_allcomplete()  
+        print 'sleeping 30s......'
+        time.sleep(30)
     print time.time() - bt
