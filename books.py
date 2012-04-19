@@ -13,6 +13,7 @@ setup_environ(settings) #安排自己人
 import time
 import socket
 import types
+import sqlite3
 from django.db import  transaction
 from django.forms.models import model_to_dict
 
@@ -54,7 +55,7 @@ def do_job(arg):
             book_parser.fetchString(the_page)
 
             for i in range(2, 4):
-                time.sleep(3)
+                #time.sleep(3)
                 url = params['url_template'].replace('$$PAGE$$', str(i))
                 the_page, m, e = pages.get_book_page(url)
                 book_parser.fetchString(the_page)
@@ -62,10 +63,13 @@ def do_job(arg):
             book_parser.parserBook()
             if config.g_mutex.acquire():
                 #print hostname + '    lock......'
-                bt = time.time()
-                upd_all_book(book_parser)
-                print "step 3 use time: %f" % (time.time()-bt)
-                config.g_mutex.release()
+                try:
+                    bt = time.time()
+                    upd_all_book(book_parser)
+                    print "step 3 use time: %f" % (time.time()-bt)
+                finally:
+                    config.g_mutex.release()
+
                 type(book_parser).last_content_url = book_parser.book_list[0]['Content_Url']
                 print ("%s 共处理 %4d 条记录" %
                        (book_parser.host_name, 
