@@ -76,9 +76,9 @@ class Book_Parser(tagparser.TagParser):
                     self.htmlData =self.htmlData[pos_begin + len(self.beginPage):pos_end]
             if not self.beginTag:
                 self.mainBegin = True
-            bt = time.time()
+            #bt = time.time()
             self.doParser()
-            print 'parser use time: ' ,time.time() - bt 
+            #print 'parser use time: ' ,time.time() - bt 
 
     def parser_func(self, num, i):
         return None, None

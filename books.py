@@ -64,9 +64,9 @@ def do_job(arg):
             if config.g_mutex.acquire():
                 #print hostname + '    lock......'
                 try:
-                    bt = time.time()
+                    #bt = time.time()
                     upd_all_book(book_parser)
-                    print "step 3 use time: %f" % (time.time()-bt)
+                    #print "step 3 use time: %f" % (time.time()-bt)
                 finally:
                     config.g_mutex.release()
 
@@ -86,7 +86,7 @@ def do_job(arg):
 def upd_all_book(book_parser):
     """更新所有小说信息"""
     #global g_books
-    bt = time.time()
+    #bt = time.time()
     for l in book_parser.book_list:
         l['Alias'] = l['Name'] + '_' + l['Author']
         l['Alias_Host'] = l['Alias'] + '_' + book_parser.host_name
@@ -122,8 +122,8 @@ def upd_all_book(book_parser):
         except KeyError:
             pass
 
-    print "step 1 use time: %f" % (time.time()-bt)
-    bt = time.time()
+    #print "step 1 use time: %f" % (time.time()-bt)
+    #bt = time.time()
     k = 0
     for b in book_parser.book_list:
         if (book_parser.is_origin):
@@ -179,8 +179,8 @@ def upd_all_book(book_parser):
             cinfo.save()
             config.g_contentinfos[b['bookinfo_id']] = b['Content_Url']
             b['is_new_contentinfo'] = config.No
-    print "step 2 use time: %f" % (time.time()-bt)
-    print "valid record %4d" % (k)
+    #print "step 2 use time: %f" % (time.time()-bt)
+    #print "valid record %4d" % (k)
 
 def get_all_book():
     book_list = []

@@ -1,0 +1,117 @@
+BODY {
+    PADDING-RIGHT: 0px;
+    PADDING-LEFT: 0px;
+    PADDING-BOTTOM: 0px;
+    MARGIN: 0px;
+    OVERFLOW: hidden;
+    PADDING-TOP: 0px
+}
+
+#main {
+    BACKGROUND: url(../images/login_bg.jpg) #f3f3f4 no-repeat center 50%;
+    FILTER: progid: DXImageTransform . Microsoft . AlphaImageLoader(src = '../images/login_bg.jpg', sizingMethod = 'scale');
+    WIDTH: 100%;
+    HEIGHT: 595px
+}
+
+#content {
+    LEFT: 50px;
+    FLOAT: left;
+    WIDTH: 896px;
+    POSITION: absolute;
+    TOP: 120px;
+    HEIGHT: 365px
+}
+
+#content_bg_m {
+    BACKGROUND: none transparent scroll repeat 0% 0%;
+    FILTER: progid: DXImageTransform . Microsoft . AlphaImageLoader(sizingMethod = 'scale', src = "../images/content_bg_m.png");
+    LEFT: 0px;
+    FLOAT: left;
+    WIDTH: 896px;
+    POSITION: absolute;
+    TOP: 0px;
+    HEIGHT: 365px
+}
+
+#content_bg {
+    BACKGROUND: none transparent scroll repeat 0% 0%;
+    FILTER: progid: DXImageTransform . Microsoft . AlphaImageLoader(sizingMethod = scale, src = "../images/content_bg.png");
+    LEFT: 0px;
+    FLOAT: left;
+    WIDTH: 896px;
+    POSITION: absolute;
+    TOP: 0px;
+    HEIGHT: 365px
+}
+
+#content_top {
+    WIDTH: 100%;
+    HEIGHT: 65px
+}
+
+#content_table {
+    WIDTH: 100%;
+    HEIGHT: 135px
+}
+
+#content_table_left {
+    FLOAT: left;
+    WIDTH: 462px;
+    HEIGHT: 135px
+}
+
+#content_table_login {
+    Z-INDEX: 99;
+    LEFT: 462px;
+    FLOAT: left;
+    WIDTH: 250px;
+    POSITION: absolute;
+    HEIGHT: 135px
+}
+
+.con_table_login {
+    FONT-SIZE: 12px;
+    COLOR: #000;
+    FONT-FAMILY: "����", "������", "����_GB2312", "���ķ���"
+}
+
+.input_style {
+    BORDER-RIGHT: #c6c6c6 1px solid;
+    BORDER-TOP: #c6c6c6 1px solid;
+    BORDER-LEFT: #c6c6c6 1px solid;
+    WIDTH: 120px;
+    BORDER-BOTTOM: #c6c6c6 1px solid;
+    HEIGHT: 14px
+}
+
+.hylink {
+    DISPLAY: block;
+    FONT-SIZE: 12px;
+    FLOAT: left;
+    WIDTH: 45px;
+    CURSOR: pointer;
+    COLOR: #000;
+    LINE-HEIGHT: 22px;
+    FONT-FAMILY: "����", "������", "����_GB2312", "���ķ���";
+    HEIGHT: 22px;
+    BACKGROUND-COLOR: #acb5b7;
+    TEXT-ALIGN: center;
+    TEXT-DECORATION: none
+}
+
+A.hylink:hover {
+    COLOR: #f0f
+}
+
+.dianzi {
+    FLOAT: left;
+    WIDTH: 15px;
+    HEIGHT: 22px
+}
+
+#tishi {
+    FONT-SIZE: 9pt;
+    COLOR: #00f;
+    FONT-FAMILY: "Arial", "Helvetica", "sans-serif", "����"
+}
