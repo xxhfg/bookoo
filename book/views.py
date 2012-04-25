@@ -6,7 +6,6 @@ from django.http import HttpResponse
 from django.template import Context
 from django.template.loader import get_template
 
-@set_current_app
 def index(request):
     t = get_template('index.html')
     html = t.render(Context({'title':'书库'}))
