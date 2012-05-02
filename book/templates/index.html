@@ -1,3 +1,5 @@
 {% include 'top.html' %}
-hello
+{% for obj in objects %}
+<li>{{obj.LastContent}}</li>
+{% endfor %}
 {% include 'bottom.html' %}
